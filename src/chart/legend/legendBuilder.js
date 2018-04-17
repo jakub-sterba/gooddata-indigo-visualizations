@@ -1,7 +1,7 @@
 // (C) 2007-2018 GoodData Corporation
 import { pick } from 'lodash';
 import { RIGHT } from './PositionTypes';
-import { PIE_CHART } from '../../VisualizationTypes';
+import { PIE_CHART, DONUT_CHART, HISTOGRAM_CHART } from '../../VisualizationTypes'; 
 
 export const DEFAULT_LEGEND_CONFIG = {
     enabled: true,
@@ -14,13 +14,13 @@ export function shouldLegendBeEnabled(chartOptions) {
     const hasMoreThanOneSeries = seriesLength > 1;
     const isStacked = !!chartOptions.stacking;
     const isPieChartWithMoreThanOneCategory =
-        (chartOptions.type === PIE_CHART && chartOptions.data.series[0].data.length > 1);
+        ((chartOptions.type === PIE_CHART || chartOptions.type === DONUT_CHART ) && chartOptions.data.series[0].data.length > 1);
 
-    return hasMoreThanOneSeries || isPieChartWithMoreThanOneCategory || isStacked;
+    return (hasMoreThanOneSeries && (chartOptions.type != HISTOGRAM_CHART) ) || isPieChartWithMoreThanOneCategory || isStacked;
 }
 
 export function getLegendItems(chartOptions) {
-    const legendDataSource = chartOptions.type === PIE_CHART
+    const legendDataSource = (chartOptions.type === PIE_CHART || chartOptions.type === DONUT_CHART)
         ? chartOptions.data.series[0].data
         : chartOptions.data.series;
     return legendDataSource.map(legendDataSourceItem => pick(legendDataSourceItem, ['name', 'color', 'legendIndex']));

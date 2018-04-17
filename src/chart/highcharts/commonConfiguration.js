@@ -95,6 +95,12 @@ const BASE_TEMPLATE = {
                     }
                 }
             },
+            dataLabels: {
+                style: {                 
+                    textOutline : 'none',
+                    'text-shadow': '0 0 3px contrast'
+                }
+            },
             point: {
                 events: {
                     click() {
