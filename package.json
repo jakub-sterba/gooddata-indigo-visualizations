@@ -94,7 +94,7 @@
     "@gooddata/numberjs": "3.0.0",
     "classnames": "2.2.5",
     "fixed-data-table-2": "0.7.17",
-    "highcharts": "4.2.5",
+    "highcharts": "6.0.7",
     "invariant": "2.2.2",
     "lodash": "4.17.4",
     "nodelist-foreach-polyfill": "1.2.0",
