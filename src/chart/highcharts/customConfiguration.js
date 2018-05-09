@@ -10,9 +10,9 @@ import {
 import styleVariables from '../../styles/variables';
 
 
-import { BAR_CHART, COLUMN_CHART, LINE_CHART, PIE_CHART, DONUT_CHART, AREA_CHART, COLUMN_LINE_CHART, COLUMN_AREA_CHART, TREEMAP_CHART, HEATMAP_CHART, WORDCLOUD_CHART, SCATTER_CHART, BULLET_CHART, BUBBLE_CHART, WATERFALL_CHART, FUNNEL_CHART, HISTOGRAM_CHART, PARETO_CHART, DUAL_AXIS_CHART } from '../../VisualizationTypes';
+import { BAR_CHART, COLUMN_CHART, LINE_CHART, PIE_CHART, DONUT_CHART, AREA_CHART, COLUMN_LINE_CHART, COLUMN_AREA_CHART, TREEMAP_CHART, HEATMAP_CHART, WORDCLOUD_CHART, SCATTER_CHART, BULLET_CHART, BUBBLE_CHART, WATERFALL_CHART, FUNNEL_CHART, HISTOGRAM_CHART, PARETO_CHART, DUAL_AXIS_CHART, SANKEY_DIAGRAM } from '../../VisualizationTypes';
 import { HOVER_BRIGHTNESS, MINIMUM_HC_SAFE_BRIGHTNESS } from './commonConfiguration';
-import { getLighterColor } from '../../utils/color';
+import { getLighterColor, DEFAULT_COLOR_PALETTE } from '../../utils/color';
 
 const EMPTY_DATA = { categories: [], series: [] };
 
@@ -377,8 +377,8 @@ function bulletLabelFormatter(opt) {
 
 function getDataConfiguration(chartOptions) {
     const data = chartOptions.data || EMPTY_DATA;
-    const series = ((chartOptions.type===PARETO_CHART)||(chartOptions.type===HISTOGRAM_CHART)||(chartOptions.type===SCATTER_CHART)||(chartOptions.type===BUBBLE_CHART)||(chartOptions.type===BULLET_CHART)||(chartOptions.type===WORDCLOUD_CHART)||(chartOptions.type===HEATMAP_CHART)||(chartOptions.type==TREEMAP_CHART))?(data.series):getSeries(data.series, chartOptions.colorPalette);
-    const categories = ((chartOptions.type===PARETO_CHART)||(chartOptions.type===HISTOGRAM_CHART)||(chartOptions.type===HEATMAP_CHART)||(chartOptions.type===BULLET_CHART)||(chartOptions.type===WATERFALL_CHART))?data.categories:map(data.categories, escapeAngleBrackets); 
+    const series = ((chartOptions.type===SANKEY_DIAGRAM)||(chartOptions.type===PARETO_CHART)||(chartOptions.type===HISTOGRAM_CHART)||(chartOptions.type===SCATTER_CHART)||(chartOptions.type===BUBBLE_CHART)||(chartOptions.type===BULLET_CHART)||(chartOptions.type===WORDCLOUD_CHART)||(chartOptions.type===HEATMAP_CHART)||(chartOptions.type==TREEMAP_CHART))?(data.series):getSeries(data.series, chartOptions.colorPalette);
+    const categories = ((chartOptions.type===SANKEY_DIAGRAM)||(chartOptions.type===PARETO_CHART)||(chartOptions.type===HISTOGRAM_CHART)||(chartOptions.type===HEATMAP_CHART)||(chartOptions.type===BULLET_CHART)||(chartOptions.type===WATERFALL_CHART))?data.categories:map(data.categories, escapeAngleBrackets); 
 
     if (chartOptions.type===WATERFALL_CHART)
     {
@@ -441,6 +441,16 @@ function getDataConfiguration(chartOptions) {
 
         
       return {      
+        series
+      };   
+    }
+    if (chartOptions.type===SANKEY_DIAGRAM)
+    {
+      
+      return { plotOptions: { sankey: {
+             colors: DEFAULT_COLOR_PALETTE
+          }
+        },     
         series
       };   
     }
@@ -519,6 +529,7 @@ function getHoverStyles(chartOptions, config) {
             };
             break;
 
+        case SANKEY_DIAGRAM:
         case PARETO_CHART:
         case HISTOGRAM_CHART:
         case WATERFALL_CHART:

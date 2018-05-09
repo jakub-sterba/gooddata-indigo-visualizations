@@ -21,6 +21,7 @@ import { default as HighchartsWordCloud } from 'highcharts/modules/wordcloud';
 import { default as HighchartsFunnel } from 'highcharts/modules/funnel';
 import { default as HighchartsHistogram } from 'highcharts/modules/histogram-bellcurve';
 import { default as HighchartsPareto } from 'highcharts/modules/pareto';
+import { default as HighchartsSankey } from 'highcharts/modules/sankey';
 
 import drillmodule from 'highcharts/modules/drilldown';
 //require('highcharts/modules/wordcloud.src')(Highchart);
@@ -47,6 +48,7 @@ HighchartsWordCloud(Highcharts);
 HighchartsFunnel(Highcharts);
 HighchartsHistogram(Highcharts);
 HighchartsPareto(Highcharts);
+HighchartsSankey(Highcharts);
 
 drillmodule(Highcharts);
 

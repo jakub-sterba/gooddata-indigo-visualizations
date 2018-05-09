@@ -6,7 +6,7 @@ import { range, get, without, escape, unescape } from 'lodash';
 import { parseValue, getAttributeElementIdFromAttributeElementUri } from '../utils/common';
 import { getMeasureUriOrIdentifier, isDrillable } from '../utils/drilldownEventing';
 import { DEFAULT_COLOR_PALETTE, getLighterColor } from '../utils/color';
-import { PIE_CHART, DONUT_CHART, COLUMN_LINE_CHART, COLUMN_AREA_CHART,SCATTER_CHART, HEATMAP_CHART, TREEMAP_CHART, BUBBLE_CHART, WORDCLOUD_CHART, BULLET_CHART, WATERFALL_CHART, FUNNEL_CHART, HISTOGRAM_CHART, PARETO_CHART, DUAL_AXIS_CHART, CHART_TYPES } from '../VisualizationTypes'; 
+import { PIE_CHART, DONUT_CHART, COLUMN_LINE_CHART, COLUMN_AREA_CHART,SCATTER_CHART, HEATMAP_CHART, TREEMAP_CHART, BUBBLE_CHART, WORDCLOUD_CHART, BULLET_CHART, WATERFALL_CHART, FUNNEL_CHART, HISTOGRAM_CHART, PARETO_CHART, DUAL_AXIS_CHART,SANKEY_DIAGRAM, CHART_TYPES } from '../VisualizationTypes'; 
 import { isDataOfReasonableSize } from './highChartsCreators';
 import { VIEW_BY_DIMENSION_INDEX, STACK_BY_DIMENSION_INDEX, PIE_CHART_LIMIT } from './constants';
 
@@ -247,6 +247,40 @@ export function generateTooltipHeatMapFn(viewByAttribute,stackByAttribute, type)
         if (viewByAttribute) textData.unshift([customEscape(viewByAttribute.formOf.name), customEscape(viewByAttribute.items[point.x].attributeHeaderItem.name)]);
         if (stackByAttribute) textData.unshift([customEscape(stackByAttribute.formOf.name), customEscape(stackByAttribute.items[point.y].attributeHeaderItem.name)]);   
 
+        return `<table class="tt-values">${textData.map(line => (
+            `<tr>
+                <td class="title">${line[0]}</td>
+                <td class="value">${line[1]}</td>
+            </tr>`
+        )).join('\n')}</table>`;
+    };
+}
+
+
+export function generateTooltipSankeyFn(viewByAttribute,stackByAttribute, type) {
+    const formatValue = (val, format) => {
+        return colors2Object(numberFormat(val, format));
+    };
+
+    return (point) => {
+        const formattedValue = customEscape(formatValue(point.weight, point.series.userOptions.formatGD).label);  
+        const textData = [];
+        
+        if (isNaN(point.weight)) {
+            const formattedSum = customEscape(formatValue(point.sum, point.series.userOptions.formatGD).label);  
+            textData.unshift([customEscape(point.series.name), formattedSum]);
+            
+        }
+        else
+        {    
+        
+        textData.unshift([customEscape(point.series.name), formattedValue]);
+
+        
+        if (stackByAttribute) textData.unshift([customEscape(stackByAttribute.formOf.name), customEscape(point.to)]);   
+        if (viewByAttribute) textData.unshift([customEscape(viewByAttribute.formOf.name), customEscape(point.from)]);
+        }
+        
         return `<table class="tt-values">${textData.map(line => (
             `<tr>
                 <td class="title">${line[0]}</td>
@@ -747,6 +781,58 @@ export function getChartOptions(
        
        return options;
     }
+
+
+ if (type==SANKEY_DIAGRAM)
+    {
+        const data = [];
+        var defColorPalette=DEFAULT_COLOR_PALETTE;
+        
+      
+        if (attributeHeaderItems[0].length==2)
+        {
+           
+                  
+           executionResultData.forEach((item, itemIndex) => {              
+     
+                 data.push([attributeHeaderItems[0][0][itemIndex].attributeHeaderItem.name,
+                            attributeHeaderItems[0][1][itemIndex].attributeHeaderItem.name,
+                            parseValue(item)                            
+                           ]);                 
+               });          
+        }
+
+        const seriesItem = {
+            name: measureGroup.items[0].measureHeaderItem.name,
+            data: data,
+            color: defColorPalette[0],
+            legendIndex: 0,
+            formatGD:  measureBuckets.measures ? unwrap(measureGroup.items[measureBuckets.measures[0]]).format : ''        
+        }        
+        
+         
+        const series=[seriesItem];
+        const categories=[''];
+        
+        const options= {
+            type,
+            stacking: null,
+            legendLayout: 'horizontal',
+            title: {        
+            },            
+            showInPercent: false,
+            data: {
+                series,
+                categories
+            },
+            actions: {
+                tooltip: (dimensions[0].headers.length==2)?generateTooltipSankeyFn(dimensions[0].headers[0].attributeHeader,dimensions[0].headers[1].attributeHeader, type) : null
+            }
+       };
+       return options;
+    }
+    
+
     
  if (type==TREEMAP_CHART)
     {
